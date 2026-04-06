@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PIRSIRTree",
+  "description": "Arbol de Priority Intelligence Requirements / Specific Intelligence Requirements - MAS-Military v1.0.0",
+  "type": "object",
+  "required": ["mission_id", "commander_intent", "pirs"],
+  "properties": {
+    "mission_id":        {"type": "string"},
+    "commander_intent": {"type": "string"},
+    "created_at":       {"type": "string", "format": "date-time"},
+    "pirs": {
+      "type": "array",
+      "description": "Priority Intelligence Requirements - nivel Comandante / Meta-Agente",
+      "items": {
+        "type": "object",
+        "required": ["pir_id", "question", "priority", "sirs"],
+        "properties": {
+          "pir_id":    {"type": "string"},
+          "question":  {"type": "string"},
+          "priority":  {"type": "integer", "minimum": 1, "maximum": 5},
+          "status":    {"type": "string", "enum": ["open","answered","deferred","cancelled"]},
+          "answered_by": {"type": ["string","null"]},
+          "answer_summary": {"type": ["string","null"]},
+          "sirs": {
+            "type": "array",
+            "description": "Specific Intelligence Requirements - nivel Supervisor/Worker",
+            "items": {
+              "type": "object",
+              "required": ["sir_id", "task", "assigned_agent"],
+              "properties": {
+                "sir_id":        {"type": "string"},
+                "task":          {"type": "string"},
+                "assigned_agent":{"type": "string"},
+                "tool_required": {"type": ["string","null"]},
+                "status":        {"type": "string", "enum": ["pending","in_progress","done","failed"]},
+                "result":        {"type": ["string","null"]},
+                "attention_score":{"type": "number", "minimum": 0, "maximum": 1},
+                "drift_detected":{"type": "boolean"},
+                "parent_pir_id": {"type": "string"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "total_pirs":        {"type": "integer"},
+    "total_sirs":        {"type": "integer"},
+    "completion_pct":    {"type": "number", "minimum": 0, "maximum": 1}
+  }
+}
