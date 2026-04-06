@@ -1,0 +1,67 @@
+name: CI - Validate JSON Schemas & Python
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate-schemas:
+    name: Validate JSON Schemas
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install jsonschema validator
+        run: pip install check-jsonschema
+
+      - name: Validate sitrep.json is valid JSON
+        run: python -m json.tool schemas/sitrep.json > /dev/null
+
+      - name: Validate bda_output.json is valid JSON
+        run: python -m json.tool schemas/bda_output.json > /dev/null
+
+      - name: Validate pir_sir_tree.json is valid JSON
+        run: python -m json.tool schemas/pir_sir_tree.json > /dev/null
+
+  lint-python:
+    name: Lint Python Sources
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install flake8 pyflakes
+
+      - name: Flake8 lint src/
+        run: flake8 src/ --max-line-length=120 --ignore=E501,W503
+
+  test-imports:
+    name: Test Python Imports
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Test sitrep_schema imports
+        run: python -c "import sys; sys.path.insert(0,'src'); import sitrep_schema; print('OK sitrep_schema')"
+
+      - name: Test attention_monitor imports
+        run: python -c "import sys; sys.path.insert(0,'src'); import attention_monitor; print('OK attention_monitor')"
+
+      - name: Test bda_working_group imports
+        run: python -c "import sys; sys.path.insert(0,'src'); import bda_working_group; print('OK bda_working_group')"
+
+      - name: Test langgraph_ecosystem imports (no langgraph)
+        run: python -c "import sys; sys.path.insert(0,'src'); import langgraph_ecosystem; print('OK langgraph_ecosystem')"
