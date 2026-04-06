@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SitrepMessage",
+  "description": "Schema canonico SITREP - MAS-Military v1.0.0",
+  "type": "object",
+  "required": ["metadata", "status", "actions_taken", "next_steps"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": ["agent_id", "role", "timestamp", "session_id", "parent_task_id"],
+      "properties": {
+        "agent_id":       {"type": "string"},
+        "role":           {"type": "string", "enum": ["meta_agent","supervisor","worker"]},
+        "timestamp":      {"type": "string", "format": "date-time"},
+        "session_id":     {"type": "string"},
+        "parent_task_id": {"type": "string"}
+      }
+    },
+    "status": {
+      "type": "object",
+      "properties": {
+        "operational_state": {"type": "string", "enum": ["FULLY_OPERATIONAL","DEGRADED","NON_OPERATIONAL","ESCALATE"]},
+        "completion_pct":    {"type": "number", "minimum": 0, "maximum": 1},
+        "current_phase":     {"type": "string", "enum": ["planning","executing","assessing","escalating"]}
+      }
+    },
+    "actions_taken": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "action":       {"type": "string"},
+          "result":       {"type": "string"},
+          "artifact_ref": {"type": ["string","null"]}
+        }
+      }
+    },
+    "intelligence": {
+      "type": "object",
+      "properties": {
+        "discoveries": {"type": "array", "items": {"type": "string"}},
+        "confirmed":   {"type": "array", "items": {"type": "string"}},
+        "unresolved":  {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "obstacles": {
+      "type": "object",
+      "properties": {
+        "blocking":       {"type": "array", "items": {"type": "string"}},
+        "non_blocking":   {"type": "array", "items": {"type": "string"}},
+        "pace_activated": {"type": ["string","null"]}
+      }
+    },
+    "next_steps": {
+      "type": "object",
+      "required": ["immediate"],
+      "properties": {
+        "immediate":              {"type": "string"},
+        "pending_decision":       {"type": ["string","null"]},
+        "awaiting_from_superior": {"type": ["string","null"]}
+      }
+    },
+    "escalation": {
+      "type": "object",
+      "properties": {
+        "required": {"type": "boolean"},
+        "level":    {"type": ["string","null"]},
+        "reason":   {"type": ["string","null"]},
+        "severity": {"type": "integer", "minimum": 1, "maximum": 4}
+      }
+    },
+    "bda_request": {
+      "type": "object",
+      "properties": {
+        "trigger_bda": {"type": "boolean"},
+        "reason":      {"type": ["string","null"]}
+      }
+    },
+    "attention": {
+      "type": "object",
+      "properties": {
+        "pir_id":          {"type": ["string","null"]},
+        "sir_id":          {"type": ["string","null"]},
+        "attention_score": {"type": ["number","null"], "minimum": 0, "maximum": 1}
+      }
+    }
+  }
+}
