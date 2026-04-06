@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BDAOutput",
+  "description": "Battle Damage Assessment - Salida del Working Group BDA v1.0.0",
+  "type": "object",
+  "required": ["session_id", "task_id", "timestamp", "consensus", "agents_votes"],
+  "properties": {
+    "session_id":  {"type": "string"},
+    "task_id":     {"type": "string"},
+    "timestamp":   {"type": "string", "format": "date-time"},
+    "consensus": {
+      "type": "object",
+      "required": ["achieved", "verdict", "confidence"],
+      "properties": {
+        "achieved":    {"type": "boolean"},
+        "verdict":     {"type": "string", "enum": ["SUCCESS","PARTIAL","FAILURE","INCONCLUSIVE"]},
+        "confidence":  {"type": "number", "minimum": 0, "maximum": 1},
+        "rounds":      {"type": "integer", "minimum": 1},
+        "dissent_count": {"type": "integer", "minimum": 0}
+      }
+    },
+    "agents_votes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["agent_id", "role", "vote", "confidence", "rationale"],
+        "properties": {
+          "agent_id":   {"type": "string"},
+          "role":       {"type": "string", "enum": ["analyst","critic","synthesizer","commander"]},
+          "vote":       {"type": "string", "enum": ["SUCCESS","PARTIAL","FAILURE","INCONCLUSIVE"]},
+          "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+          "rationale":  {"type": "string"},
+          "pir_refs":   {"type": "array", "items": {"type": "string"}},
+          "sir_refs":   {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "damage_assessment": {
+      "type": "object",
+      "properties": {
+        "objectives_met":     {"type": ["integer","null"]},
+        "objectives_total":   {"type": ["integer","null"]},
+        "completion_pct":     {"type": ["number","null"], "minimum": 0, "maximum": 1},
+        "collateral_issues":  {"type": "array", "items": {"type": "string"}},
+        "follow_up_required": {"type": "boolean"}
+      }
+    },
+    "lessons_learned": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "category":    {"type": "string", "enum": ["process","communication","tools","strategy"]},
+          "observation": {"type": "string"},
+          "action_item": {"type": ["string","null"]}
+        }
+      }
+    },
+    "escalate_to_meta_agent": {"type": "boolean"},
+    "next_mission_trigger":  {"type": ["string","null"]}
+  }
+}
